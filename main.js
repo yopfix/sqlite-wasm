@@ -1,22 +1,29 @@
 import sqlite3InitModule from '@sqlite.org/sqlite-wasm';
 
-const container = document.querySelector('.main-thread');
+const mainPre = document.querySelector('.main');
+const workerPre = document.querySelector('.worker');
 
-const logHtml = function (cssClass, ...args) {
-  const div = document.createElement('div');
-  if (cssClass) div.classList.add(cssClass);
-  div.append(document.createTextNode(args.join(' ')));
-  container.append(div);
-};
+const log = (...args) => {
+  console.log(...args);
+  mainPre.textContent += `${args.join(' ')}\n`
+}
+const error = (...args) => {
+  console.error(...args);
+  mainPre.textContent += `${args.join(' ')}\n`
+}
 
-const log = (...args) => logHtml('', ...args);
-const error = (...args) => logHtml('error', ...args);
+const workerLog = (...args) => {
+  console.log(...args);
+  workerPre.textContent += `${args.join(' ')}\n`
+}
+const workerError = (...args) => {
+  console.error(...args);
+  workerPre.textContent += `${args.join(' ')}\n`
+}
 
 const start = function (sqlite3) {
   log('Running SQLite3 version', sqlite3.version.libVersion);
   const db = new sqlite3.oo1.DB('/mydb.sqlite3', 'ct');
-  log('Created transient database', db.filename);
-
   try {
     log('Creating a table...');
     db.exec('CREATE TABLE IF NOT EXISTS t(a,b)');
@@ -44,10 +51,15 @@ sqlite3InitModule({
   print: log,
   printErr: error,
 }).then((sqlite3) => {
-  log('Done initializing. Running demo...');
   try {
+    log('Done initializing. Running demo...');
     start(sqlite3);
   } catch (err) {
     error(err.name, err.message);
   }
 });
+
+const worker = new Worker('/worker.js', { type: 'module' });
+worker.onmessage = (e) => {  
+  e.data.type === 'log' ? workerLog(e.data.payload) : workerError(e.data.payload);  
+};

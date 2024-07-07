@@ -1,14 +1,7 @@
 import sqlite3InitModule from '@sqlite.org/sqlite-wasm';
 
-const logHtml = function (cssClass, ...args) {
-  postMessage({
-    type: 'log',
-    payload: { cssClass, args },
-  });
-};
-
-const log = (...args) => logHtml('', ...args);
-const error = (...args) => logHtml('error', ...args);
+const log = (...args) => postMessage({type: 'log', payload: args.join(' ')});
+const error = (...args) => postMessage({type: 'error', payload: args.join(' ')});
 
 const start = function (sqlite3) {
   log('Running SQLite3 version', sqlite3.version.libVersion);
