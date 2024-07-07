@@ -1,4 +1,4 @@
-import sqlite3InitModule from '@sqlite.org/sqlite-wasm';
+import sqlite3InitModule from "/node_modules/@sqlite.org/sqlite-wasm/index.mjs";
 
 const mainPre = document.querySelector('.main');
 const workerPre = document.querySelector('.worker');
@@ -58,8 +58,9 @@ sqlite3InitModule({
     error(err.name, err.message);
   }
 });
-
-const worker = new Worker('/worker.js', { type: 'module' });
-worker.onmessage = (e) => {  
-  e.data.type === 'log' ? workerLog(e.data.payload) : workerError(e.data.payload);  
+const worker = new Worker(new URL('./worker.js', import.meta.url), {
+  type: 'module',
+});
+worker.onmessage = (e) => {
+  e.data.type === 'log' ? workerLog(e.data.payload) : workerError(e.data.payload);
 };

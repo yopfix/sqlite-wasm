@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite';
+import { version } from './package.json'
 
 export default defineConfig({
   server: {
@@ -9,5 +10,5 @@ export default defineConfig({
   },
   optimizeDeps: {
     exclude: ['@sqlite.org/sqlite-wasm'],
-  },
+  }
 });

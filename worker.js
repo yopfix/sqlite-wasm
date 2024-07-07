@@ -1,5 +1,4 @@
-// In `worker.js`.
-import sqlite3InitModule from '@sqlite.org/sqlite-wasm';
+import sqlite3InitModule from "/node_modules/@sqlite.org/sqlite-wasm/index.mjs";
 
 const log = (...args) => postMessage({type: 'log', payload: args.join(' ')});
 const error = (...args) => postMessage({type: 'error', payload: args.join(' ')});
